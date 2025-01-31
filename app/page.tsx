@@ -2,6 +2,7 @@ import Image from "next/image"
 import { Button } from "./components/ui/button"
 import { StarIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { AnimatedBackground } from "./components/AnimatedBackground"
+import Link from 'next/link'
 
 export default function Page() {
   return (
@@ -10,7 +11,7 @@ export default function Page() {
       {/* Add a semi-transparent overlay for better text contrast */}
       <div className="absolute inset-0 bg-black/30 z-10" />
 
-      {/* Header - 增加了垂直padding */}
+      {/* Header - 恢复原始样式 */}
       <header className="relative flex items-center justify-between px-12 py-8 z-20">
         <div className="flex items-center gap-4">
           <svg className="w-12 h-12 text-[#2493DF]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,21 +40,45 @@ export default function Page() {
           <span className="text-white text-2xl font-semibold">LearnTech</span>
         </div>
 
-        {/* 增加导航项间距 */}
+        {/* Navigation */}
         <nav className="hidden md:flex items-center gap-12 text-gray-300">
-          <button className="hover:text-[#2493DF] transition-colors duration-200 text-lg">Courses</button>
-          <button className="hover:text-[#2493DF] transition-colors duration-200 text-lg">Testimony</button>
-          <button className="hover:text-[#2493DF] transition-colors duration-200 text-lg">Discuss</button>
-          <button className="hover:text-[#2493DF] transition-colors duration-200 text-lg">Pricing</button>
-          <button className="hover:text-[#2493DF] transition-colors duration-200 text-lg">Teams</button>
-          <button className="hover:text-[#2493DF] transition-colors duration-200 text-lg">FAQ</button>
+          <Link href="/courses" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+            Courses
+          </Link>
+          <Link href="#testimony" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+            Testimony
+          </Link>
+          <Link href="#discuss" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+            Discuss
+          </Link>
+          <Link href="#pricing" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+            Pricing
+          </Link>
+          <Link href="#teams" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+            Teams
+          </Link>
+          <Link href="#faq" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+            FAQ
+          </Link>
         </nav>
 
+        {/* Auth Buttons */}
         <div className="flex items-center gap-6">
-          <Button variant="ghost" className="text-[#2493DF] hover:text-[#2493DF]/90 text-lg">
-            Log in
-          </Button>
-          <Button className="bg-[#2493DF] hover:bg-[#2493DF]/90 text-lg px-8">Register</Button>
+          <Link href="/login">
+            <Button 
+              variant="ghost" 
+              className="text-white hover:text-white/90 text-lg"
+            >
+              Sign In
+            </Button>
+          </Link>
+          <Link href="/register">
+            <Button 
+              className="bg-[#2493DF] hover:bg-[#2493DF]/90 text-lg px-8"
+            >
+              Sign Up
+            </Button>
+          </Link>
         </div>
       </header>
 
