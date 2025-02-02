@@ -1,10 +1,15 @@
+"use client"
+
 import Image from "next/image"
 import { Button } from "./components/ui/button"
 import { StarIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { AnimatedBackground } from "./components/AnimatedBackground"
 import Link from 'next/link'
+import { useAuth } from './contexts/AuthContext'
 
 export default function Page() {
+  const { user, logout } = useAuth()
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1C1D24] to-[#2C2D34] relative overflow-hidden">
       <AnimatedBackground />
@@ -45,17 +50,17 @@ export default function Page() {
           <Link href="/courses" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
             Courses
           </Link>
+          <Link href="/teams" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+            Teams
+          </Link>
           <Link href="#testimony" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
             Testimony
           </Link>
-          <Link href="#discuss" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
+          <Link href="/discuss" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
             Discuss
           </Link>
           <Link href="#pricing" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
             Pricing
-          </Link>
-          <Link href="#teams" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
-            Teams
           </Link>
           <Link href="#faq" className="hover:text-[#2493DF] transition-colors duration-200 text-lg">
             FAQ
@@ -64,49 +69,48 @@ export default function Page() {
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-6">
-          <Link href="/login">
-            <Button 
-              variant="ghost" 
-              className="text-white hover:text-white/90 text-lg"
-            >
-              Sign In
-            </Button>
-          </Link>
-          <Link href="/register">
-            <Button 
-              className="bg-[#2493DF] hover:bg-[#2493DF]/90 text-lg px-8"
-            >
-              Sign Up
-            </Button>
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-white">{user.name}</span>
+              <Button 
+                variant="ghost" 
+                className="text-white hover:text-white/90"
+                onClick={() => logout()}
+              >
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" className="text-white hover:text-white/90 text-lg">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button className="bg-[#2493DF] hover:bg-[#2493DF]/90 text-lg px-8">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
-      {/* Hero Section - 增加了垂直padding和文字间距 */}
-      <main className="relative max-w-6xl mx-auto px-8 py-48 text-center z-20">
-        <h1 className="text-6xl font-bold text-white mb-12">Master Machine Learning Made Simple.</h1>
-        <p className="text-2xl text-gray-300 mb-16">Learn AI and Machine Learning through hands-on practice.</p>
-
-        <div className="flex flex-col items-center gap-8 max-w-sm mx-auto">
-          <Button className="w-full bg-[#2493DF] hover:bg-[#2493DF]/90 flex items-center gap-2">
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path
-                fill="currentColor"
-                d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z"
-              />
-            </svg>
-            Log in with Google
+      {/* Hero Section */}
+      <div className="relative z-20 flex flex-col items-center justify-center min-h-[calc(100vh-96px)] text-center px-4">
+        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+          Learn AI & Machine Learning
+        </h1>
+        <p className="text-xl text-gray-300 mb-8 max-w-2xl">
+          Master the future of technology with our comprehensive courses and hands-on projects
+        </p>
+        <Link href="/courses">
+          <Button className="bg-[#2493DF] hover:bg-[#2493DF]/90 text-lg px-8 py-6">
+            Start Learning Now
           </Button>
-          <div className="flex items-center gap-4 w-full">
-            <div className="h-px bg-gray-700 flex-1" />
-            <span className="text-gray-400">or</span>
-            <div className="h-px bg-gray-700 flex-1" />
-          </div>
-          <Button variant="ghost" className="w-full text-[#2493DF] hover:text-[#2493DF]/90">
-            See more options
-          </Button>
-        </div>
-      </main>
+        </Link>
+      </div>
 
       {/* Modern Design Section - 使用更亮的背景 */}
       <div className="relative bg-gradient-to-b from-[#1C1D24] via-[#f5f7fa] to-[#f5f7fa] z-20">

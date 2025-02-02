@@ -7,9 +7,21 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export async function POST(req: Request) {
   try {
+    console.log('Connecting to database...')
     await dbConnect()
     
-    const { name, email, password } = await req.json()
+    const body = await req.json()
+    console.log('Received registration data:', body)
+
+    const { name, email, password } = body
+
+    // 检查必需字段
+    if (!name || !email || !password) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
 
     // 检查邮箱是否已存在
     const existingUser = await User.findOne({ email })
@@ -21,6 +33,7 @@ export async function POST(req: Request) {
     }
 
     // 创建新用户
+    console.log('Creating new user...')
     const user = await User.create({
       name,
       email,
@@ -34,6 +47,8 @@ export async function POST(req: Request) {
       { expiresIn: '7d' }
     )
 
+    console.log('User created successfully')
+
     return NextResponse.json({
       user: {
         id: user._id,
@@ -43,8 +58,9 @@ export async function POST(req: Request) {
       token
     })
   } catch (error: any) {
+    console.error('Registration API error:', error)
     return NextResponse.json(
-      { error: 'Registration failed' },
+      { error: error.message || 'Registration failed' },
       { status: 500 }
     )
   }

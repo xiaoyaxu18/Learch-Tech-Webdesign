@@ -42,8 +42,10 @@ export default function RegisterForm() {
     
     setIsLoading(true)
     try {
+      console.log('Attempting to register with:', { email, password, name })
       await register(email, password, name)
     } catch (err: any) {
+      console.error('Registration error:', err)
       setError(err.message || 'Registration failed, please try again')
     } finally {
       setIsLoading(false)

@@ -76,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string, name: string) => {
     try {
+      console.log('Sending registration request...')
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -85,9 +86,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       const data = await response.json()
+      console.log('Registration response:', data)
       
       if (!response.ok) {
-        throw new Error(data.error)
+        throw new Error(data.error || 'Registration failed')
       }
 
       setUser(data.user)
@@ -95,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('token', data.token)
       router.push('/')
     } catch (error: any) {
-      console.error('Registration failed:', error)
+      console.error('Registration error in context:', error)
       throw error
     }
   }
