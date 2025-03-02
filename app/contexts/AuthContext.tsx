@@ -12,7 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string, name: string) => Promise<void>
+  register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
   isLoading: boolean
 }
@@ -25,28 +25,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        setIsLoading(false)
-        return
-      }
-
-      // 这里应该调用实际的API验证token
-      const storedUser = localStorage.getItem('user')
-      if (storedUser) {
-        setUser(JSON.parse(storedUser))
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error)
-    } finally {
-      setIsLoading(false)
+    // 检查本地存储中是否有用户信息
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
     }
-  }
+    setIsLoading(false)
+  }, [])
 
   const login = async (email: string, password: string) => {
     try {
@@ -59,53 +44,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       const data = await response.json()
-      
+
       if (!response.ok) {
-        throw new Error(data.error)
+        throw new Error(data.error || 'An error occurred during login')
       }
 
-      setUser(data.user)
+      // 保存用户信息和token
       localStorage.setItem('user', JSON.stringify(data.user))
       localStorage.setItem('token', data.token)
+      setUser(data.user)
       router.push('/')
-    } catch (error: any) {
-      console.error('Login failed:', error)
+    } catch (error) {
+      console.error('Login error:', error)
       throw error
     }
   }
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (name: string, email: string, password: string) => {
     try {
-      console.log('Sending registration request...')
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ name, email, password }),
       })
 
       const data = await response.json()
-      console.log('Registration response:', data)
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Registration failed')
       }
 
-      setUser(data.user)
+      // 保存用户信息和token
       localStorage.setItem('user', JSON.stringify(data.user))
       localStorage.setItem('token', data.token)
+      setUser(data.user)
       router.push('/')
-    } catch (error: any) {
-      console.error('Registration error in context:', error)
+    } catch (error) {
+      console.error('Registration error:', error)
       throw error
     }
   }
 
   const logout = () => {
-    setUser(null)
     localStorage.removeItem('user')
     localStorage.removeItem('token')
+    setUser(null)
     router.push('/login')
   }
 

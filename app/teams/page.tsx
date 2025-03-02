@@ -6,8 +6,7 @@ import Image from 'next/image'
 
 const founder = {
   name: 'Tao Li',
-  title: 'Founder & Program Director',
-  affiliation: 'Santa Clara University',
+  title: 'Founding President of SVAI',
   bio: `Professor Tao Li is the director of the MS Program in Business Analytics and Co-Lead of 
   Prometheus Lab for AI and Business at Santa Clara University. With expertise in Machine Learning, 
   Data Analytics, and Business Intelligence, he brings a unique blend of academic excellence and 
@@ -28,7 +27,7 @@ const instructors = [
     title: 'Machine Learning Instructor',
     affiliation: 'Korea Advanced Institute of Science',
     expertise: 'Machine Learning & Deep Learning',
-    image: '/instructors/placeholder.jpg',
+    image: '/images/instructors/yasin.jpg',
     courses: ['Machine Learning with Python', 'Deep Learning with Python']
   },
   {
@@ -37,7 +36,7 @@ const instructors = [
     title: 'Data Science Instructor',
     affiliation: 'Data Scientist at Agari',
     expertise: 'Data Analysis & Visualization',
-    image: '/instructors/placeholder.jpg',
+    image: '/images/instructors/siobhan.jpg',
     courses: ['Data Analysis with Python', 'Data Visualization with Tableau']
   },
   {
@@ -46,7 +45,7 @@ const instructors = [
     title: 'AI Engineer',
     affiliation: 'AI Engineer at Facebook',
     expertise: 'Database Systems & SQL',
-    image: '/instructors/placeholder.jpg',
+    image: '/images/instructors/tyler.jpg',
     courses: ['Database with SQL']
   }
 ]
@@ -81,7 +80,6 @@ export default function TeamsPage() {
                 <div className="text-center mt-6">
                   <h2 className="text-2xl font-bold text-gray-800">{founder.name}</h2>
                   <p className="text-[#2493DF] font-medium mt-1">{founder.title}</p>
-                  <p className="text-gray-500 mt-1">{founder.affiliation}</p>
                   
                   <div className="flex justify-center gap-4 mt-4">
                     {Object.entries(founder.social).map(([platform, link]) => (
@@ -153,11 +151,11 @@ export default function TeamsPage() {
                       </li>
                       <li className="flex items-center gap-2 text-gray-600">
                         <span className="w-2 h-2 bg-[#2493DF] rounded-full"></span>
-                        Adobe
+                        Teladoc Health
                       </li>
                       <li className="flex items-center gap-2 text-gray-600">
                         <span className="w-2 h-2 bg-[#2493DF] rounded-full"></span>
-                        Intuitive Surgical
+                        Robolox
                       </li>
                     </ul>
                   </div>
@@ -200,7 +198,6 @@ export default function TeamsPage() {
                   </div>
                   <h3 className="text-xl font-semibold text-gray-800">{instructor.name}</h3>
                   <p className="text-[#2493DF] font-medium">{instructor.title}</p>
-                  <p className="text-sm text-gray-500 mt-1">{instructor.affiliation}</p>
                 </div>
 
                 <div className="mb-6">
