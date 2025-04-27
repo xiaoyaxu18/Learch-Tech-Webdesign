@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server'
 import { getDb } from '../../../../../lib/mongodb'
 import { ObjectId } from 'mongodb'
@@ -38,4 +37,15 @@ export async function PATCH(req: Request, { params }: { params: { courseId: stri
   )
 
   return NextResponse.json({ modifiedCount: result.modifiedCount })
+}
+
+export async function DELETE(req: Request, { params }: { params: { courseId: string, assignmentId: string } }) {
+  const db = await getDb()
+
+  const result = await db.collection('assignments').deleteOne({
+    _id: new ObjectId(params.assignmentId),
+    courseId: params.courseId,
+  })
+
+  return NextResponse.json({ deletedCount: result.deletedCount })
 }

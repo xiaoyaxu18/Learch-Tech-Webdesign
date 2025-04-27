@@ -36,6 +36,17 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
     setAssignments(data)
   }
 
+  async function handleDeleteAssignment(assignmentId: string) {
+    await fetch(`/api/courses/${params.courseId}/assignments/${assignmentId}`, {
+      method: 'DELETE',
+    })
+
+    // 删除成功后刷新作业列表
+    const res = await fetch(`/api/courses/${params.courseId}/assignments`)
+    const data = await res.json()
+    setAssignments(data)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
@@ -50,6 +61,7 @@ export default function AssignmentsPage({ params }: { params: { courseId: string
       <AssignmentList 
         assignments={assignments}
         courseId={params.courseId}
+        onDeleteAssignment={handleDeleteAssignment}
       />
     </div>
   )
