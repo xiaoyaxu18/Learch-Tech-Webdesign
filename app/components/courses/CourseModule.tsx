@@ -1,15 +1,20 @@
 import { Clock, BookOpen, ChevronRight } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
+import VideoPlayer from './VideoPlayer'
 
 interface CourseModuleProps {
   course: {
+    _id: string
     id: number
     name: string
     description: string
     level: string
     duration: string
     topics: string[]
+    progress?: number
+    instructor?: string
+    startDate?: string
   }
 }
 
@@ -75,12 +80,15 @@ export default function CourseModule({ course }: CourseModuleProps) {
         )}
       </div>
 
-      <Link href={`/courses/${course.id}`}>
+      <Link href={`/courses/${course._id}/videos`}>
         <Button className="w-full bg-[#2493DF] hover:bg-[#2493DF]/90 group">
           View Course
           <ChevronRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </Link>
+
+      {/* 移除视频缩略图的部分 */}
+      {/* <img src={course.thumbnail} alt={course.title} className="w-full h-auto" /> */}
     </div>
   )
-} 
+}

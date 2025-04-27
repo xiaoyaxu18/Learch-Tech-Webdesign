@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { Button } from '../ui/button'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('')
@@ -44,6 +45,12 @@ export default function RegisterForm() {
     try {
       console.log('Attempting to register with:', { email, password, name })
       await register(email, password, name)
+      await signIn('credentials', {
+        email,
+        password,
+        redirect: true,
+        callbackUrl: '/'
+      })
     } catch (err: any) {
       console.error('Registration error:', err)
       setError(err.message || 'Registration failed, please try again')
