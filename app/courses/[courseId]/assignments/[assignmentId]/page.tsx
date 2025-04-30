@@ -15,6 +15,7 @@ export default function AssignmentPage({
     description: string;
     dueDate: string;
     points: number;
+    attachmentUrls?: string[];
   } | null>(null)
   const [isEditing, setIsEditing] = useState(false)
 
@@ -161,6 +162,114 @@ export default function AssignmentPage({
               Save Changes
             </Button>
           </div>
+        )}
+      </div>
+
+      <div className="mt-6">
+        <h2 className="text-lg font-semibold text-white mb-2">Assignment Requirement Document</h2>
+
+        {assignment.attachmentUrls && assignment.attachmentUrls.length > 0 ? (
+          <>
+            {assignment.attachmentUrls.map((url, index) => (
+              <div key={index} className="mb-2">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 underline"
+                >
+                  View Uploaded Document {index + 1}
+                </a>
+                {/* Download and Delete buttons */}
+                <div className="flex items-center gap-4 mt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const link = document.createElement('a')
+                      link.href = url
+                      link.download = url.split('/').pop() || `document-${index + 1}.pdf`
+                      document.body.appendChild(link)
+                      link.click()
+                      document.body.removeChild(link)
+                    }}
+                  >
+                    Download
+                  </Button>
+                  {isEditing && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={async () => {
+                        const confirmed = confirm('Are you sure you want to delete this document?')
+                        if (!confirmed) return
+
+                        const res = await fetch(`/api/courses/${params.courseId}/assignments/${params.assignmentId}/upload`, {
+                          method: 'DELETE',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ url }),
+                        })
+
+                        if (res.ok) {
+                          const result = await res.json()
+                          setAssignment({
+                            ...assignment,
+                            attachmentUrls: result.attachmentUrls
+                          })
+                          alert('Document deleted.')
+                        } else {
+                          alert('Failed to delete document.')
+                        }
+                      }}
+                    >
+                      Delete Document
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <p className="text-gray-400">No document uploaded yet.</p>
+        )}
+
+        {isEditing && (
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault()
+              const files = (e.target as any).file.files
+              if (!files || files.length === 0) {
+                alert('Please select at least one file to upload.')
+                return
+              }
+              const formData = new FormData()
+              for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i])
+              }
+
+              const res = await fetch(`/api/courses/${params.courseId}/assignments/${params.assignmentId}/upload`, {
+                method: 'POST',
+                body: formData,
+              })
+
+              if (res.ok) {
+                const data = await res.json()
+                setAssignment({ 
+                  ...assignment, 
+                  attachmentUrls: [...(assignment.attachmentUrls || []), ...data.urls] 
+                })
+                alert('File(s) uploaded successfully.')
+              } else {
+                alert('Upload failed.')
+              }
+            }}
+            className="mt-4"
+          >
+            <input name="file" type="file" accept=".pdf,.doc,.docx" multiple className="text-white" />
+            <Button className="ml-4" type="submit">Upload</Button>
+          </form>
         )}
       </div>
     </div>
