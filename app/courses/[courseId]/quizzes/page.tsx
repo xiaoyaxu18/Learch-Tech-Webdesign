@@ -2,65 +2,68 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { QuizList } from '@/app/components/courses/QuizList'
+import Link from 'next/link'
 
-const mockQuizzes = [
-  {
-    id: 'm1',
-    title: 'M1: Quiz',
-    availableUntil: '2024-03-23T23:59:00',
-    dueDate: '2024-01-14T23:59:00',
-    points: 20,
-    questionCount: 10,
-    isAvailable: true
-  },
-  {
-    id: 'm2',
-    title: 'M2: Quiz',
-    availableUntil: '2024-03-23T23:59:00',
-    dueDate: '2024-01-23T23:59:00',
-    points: 20,
-    questionCount: 10,
-    isAvailable: true
-  },
-  {
-    id: 'm3',
-    title: 'M3: Quiz',
-    availableUntil: '2024-03-23T23:59:00',
-    dueDate: '2024-01-31T23:59:00',
-    points: 20,
-    questionCount: 10,
-    isAvailable: true
-  },
-  {
-    id: 'm10',
-    title: 'M10: Final Exam',
-    availableUntil: '2024-03-17T17:53:00',
-    dueDate: '2024-03-17T20:00:00',
-    points: 350,
-    questionCount: 70,
-    isAvailable: false
-  }
-]
+type Quiz = {
+  _id: string
+  title: string
+  description?: string
+  points?: number
+  questions?: any[]
+}
 
 export default function QuizzesPage() {
-  const params = useParams()
-  const courseId = params.courseId as string
-  const [quizzes, setQuizzes] = useState(mockQuizzes)
+  const { courseId } = useParams()
+  const [quizzes, setQuizzes] = useState<Quiz[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: 从API获取测验列表
-    // fetch(`/api/courses/${courseId}/quizzes`)
-    //   .then(res => res.json())
-    //   .then(data => setQuizzes(data))
+    const fetchQuizzes = async () => {
+      const res = await fetch(`/api/courses/${courseId}/quizzes`)
+      if (res.ok) {
+        const data = await res.json()
+        setQuizzes(data)
+      }
+      setLoading(false)
+    }
+    fetchQuizzes()
   }, [courseId])
 
+  if (loading) return <div className="text-white">Loading...</div>
+
   return (
-    <div className="space-y-6">
-      <QuizList 
-        quizzes={quizzes}
-        courseId={courseId}
-      />
+    <div className="p-6 space-y-6 text-white">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold">Quizzes</h1>
+        <Link
+          href={`/courses/${courseId}/quizzes/create`}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Create Quiz
+        </Link>
+      </div>
+      {quizzes.length === 0 ? (
+        <p>No quizzes yet.</p>
+      ) : (
+        <div className="space-y-4">
+          {quizzes.map((quiz) => (
+            <Link
+              key={quiz._id}
+              href={`/courses/${courseId}/quizzes/${quiz._id}`}
+              className="block border border-gray-700 rounded p-4 hover:bg-gray-800"
+            >
+              <h2 className="text-lg font-bold">{quiz.title}</h2>
+              <p className="text-sm text-gray-300">{quiz.description}</p>
+              <Link
+                href={`/courses/${courseId}/quizzes/${quiz._id}/edit`}
+                className="mt-2 inline-block text-blue-400 hover:underline text-sm"
+              >
+                Edit Quiz
+              </Link>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   )
-} 
+}

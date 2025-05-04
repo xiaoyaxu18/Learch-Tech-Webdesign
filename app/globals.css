@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities; 
+
+/* Invert the react-datepicker calendar icon for dark mode */
+.react-datepicker__calendar-icon {
+  filter: brightness(2.5) invert(1);
+  opacity: 1;
+}
+
+.react-datepicker__calendar-icon svg {
+  fill: white;
+}
