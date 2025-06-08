@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/app/components/ui/button'
 import { Calendar, Clock, ArrowLeft, Pencil, Save } from 'lucide-react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 export default function AssignmentPage({ 
   params 
 }: { 
   params: { courseId: string; assignmentId: string } 
 }) {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === 'admin';
   const [assignment, setAssignment] = useState<{
     title: string;
     description: string;
@@ -26,6 +29,13 @@ export default function AssignmentPage({
     points: 0,
   })
 
+  const [showSubmit, setShowSubmit] = useState(false)
+  const [submitFile, setSubmitFile] = useState<File | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const [submittedFile, setSubmittedFile] = useState<{ fileUrl: string, fileName: string, submittedAt: string } | null>(null)
+  const [submissions, setSubmissions] = useState<any[]>([]);
+
   useEffect(() => {
     async function fetchAssignment() {
       const res = await fetch(`/api/courses/${params.courseId}/assignments/${params.assignmentId}`)
@@ -40,6 +50,21 @@ export default function AssignmentPage({
     }
     fetchAssignment()
   }, [params.courseId, params.assignmentId])
+
+  useEffect(() => {
+    async function fetchSubmitted() {
+      const res = await fetch(`/api/courses/${params.courseId}/assignments/${params.assignmentId}/submit`)
+      const data = await res.json()
+      if (isAdmin) {
+        setSubmissions(Array.isArray(data) ? data : [])
+      } else {
+        if (data.fileUrl) {
+          setSubmittedFile(data)
+        }
+      }
+    }
+    fetchSubmitted()
+  }, [params.courseId, params.assignmentId, isAdmin])
 
   if (!assignment) {
     return <div className="text-white">Loading...</div>
@@ -101,7 +126,7 @@ export default function AssignmentPage({
           )}
         </div>
 
-        <Button size={"icon"} onClick={() => setIsEditing(!isEditing)}>
+        <Button size={null} onClick={() => setIsEditing(!isEditing)}>
           {isEditing ? <Save className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
         </Button>
       </div>
@@ -137,9 +162,48 @@ export default function AssignmentPage({
             </div>
           </div>
           {!isEditing && (
-            <Button className="bg-[#2493DF]">
+            <>
+              <Button className="bg-[#2493DF]" onClick={() => setShowSubmit(!showSubmit)}>
               Submit Assignment
             </Button>
+              {showSubmit && (
+                <form
+                  className="mt-4"
+                  onSubmit={async (e) => {
+                    e.preventDefault()
+                    if (!submitFile) {
+                      alert('Please select a file.')
+                      return
+                    }
+                    setSubmitting(true)
+                    const formData = new FormData()
+                    formData.append('file', submitFile)
+                    const res = await fetch(`/api/courses/${params.courseId}/assignments/${params.assignmentId}/submit`, {
+                      method: 'POST',
+                      body: formData,
+                    })
+                    setSubmitting(false)
+                    if (res.ok) {
+                      alert('Assignment submitted successfully!')
+                      setShowSubmit(false)
+                      setSubmitFile(null)
+                    } else {
+                      alert('Submission failed.')
+                    }
+                  }}
+                >
+                  <input
+                    type="file"
+                    onChange={e => setSubmitFile(e.target.files?.[0] || null)}
+                    required
+                    className="text-white"
+                  />
+                  <Button className="ml-4" type="submit" disabled={submitting}>
+                    {submitting ? 'Submitting...' : 'Upload'}
+                  </Button>
+                </form>
+              )}
+            </>
           )}
         </div>
 
@@ -272,6 +336,48 @@ export default function AssignmentPage({
           </form>
         )}
       </div>
+
+      {/* 展示所有提交：仅 admin 可见 */}
+      {isAdmin && (
+        <div className="mt-8">
+          <h3 className="text-white text-lg mb-2">All Submissions</h3>
+          {submissions.length === 0 ? (
+            <div className="text-gray-400">No submissions yet.</div>
+          ) : (
+            <div className="space-y-4">
+              {submissions.map((sub, idx) => (
+                <div key={sub._id || idx} className="bg-white/10 rounded-lg p-4">
+                  <div><b>User:</b> {sub.userName || sub.uploadedBy || sub.userId}</div>
+                  <div>
+                    <b>File:</b> <a href={sub.fileUrl} target="_blank" className="text-blue-400 underline">{sub.fileName}</a>
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    <b>Submitted At:</b> {sub.submittedAt ? new Date(sub.submittedAt).toLocaleString() : ''}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 普通用户自己的提交 */}
+      {!isAdmin && submittedFile && (
+        <div className="mt-4">
+          <h3 className="text-white">Your Submitted Assignment:</h3>
+          <a
+            href={submittedFile.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 underline"
+          >
+            {submittedFile.fileName}
+          </a>
+          <div className="text-gray-400 text-sm">
+            Submitted at: {new Date(submittedFile.submittedAt).toLocaleString()}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

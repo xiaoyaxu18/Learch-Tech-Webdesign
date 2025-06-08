@@ -1,12 +1,25 @@
-import { getCourseById } from '../../lib/db'
-import { notFound } from 'next/navigation'
+"use client"
+
+import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function CourseDetailPage({ params }: { params: { courseId: string } }) {
-  const course = await getCourseById(params.courseId)
-  
-  if (!course) {
-    notFound()
+export default function CoursePage() {
+  const params = useParams()
+  const courseId = params.courseId as string
+  const [course, setCourse] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    fetch(`/api/courses/${courseId}`)
+      .then(res => res.json())
+      .then(data => setCourse(data))
+      .finally(() => setLoading(false))
+  }, [courseId])
+
+  if (loading || !course) {
+    return <div className="p-8 text-white">Loading course...</div>
   }
 
   return (
@@ -29,7 +42,7 @@ export default async function CourseDetailPage({ params }: { params: { courseId:
           <div className="bg-white/5 rounded-lg p-4">
             <h3 className="text-white font-medium mb-2">Topics Covered</h3>
             <div className="flex flex-wrap gap-2">
-              {Array.isArray(course.topics) && course.topics.map((topic, index) => (
+              {Array.isArray(course.topics) && course.topics.map((topic: string, index: number) => (
                 <span 
                   key={index}
                   className="bg-[#2493DF]/10 text-[#2493DF] px-3 py-1 rounded-full text-sm"

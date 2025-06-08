@@ -106,9 +106,39 @@ function uploadVideo(filePath, title, courseId, uploaderId) {
         });
     });
 }
-// 使用示例
-uploadVideo('/path/to/your/video.mp4', // 本地视频文件路径
-'线性代数第一课', // 视频标题
-'课程ID', // MongoDB中的课程ID
-'上传者ID' // MongoDB中的用户ID
-);
+// 批量上传示例
+const videoList = [
+  {
+    filePath: '/Users/xiaoya/Videos/Video1.mp4',
+    title: 'Video 1: Course Introduction',
+    courseId: '65f2f1234567890abcdef123',
+    uploaderId: '65f2f1234567890abcdef456'
+  },
+  {
+    filePath: '/Users/xiaoya/Videos/Video2.mp4',
+    title: 'Video 2: Linear Algebra',
+    courseId: '65f2f1234567890abcdef123',
+    uploaderId: '65f2f1234567890abcdef456'
+  },
+  {
+    filePath: '/Users/xiaoya/Videos/Video3.mp4',
+    title: 'Video 3: Data Analysis',
+    courseId: '65f2f1234567890abcdef123',
+    uploaderId: '65f2f1234567890abcdef456'
+  }
+]
+
+async function batchUpload() {
+  for (const video of videoList) {
+    await uploadVideo(video.filePath, video.title, video.courseId, video.uploaderId)
+  }
+}
+
+
+// 单个上传示例
+uploadVideo(
+  '/Users/xiaoya/Videos/Video 1.1 Connect to Data_tableau.mp4',
+  'Video 1.1 Connect to Data (tableau)',
+  '65f2f1234567890abcdef123',
+  '65f2f1234567890abcdef456'
+)

@@ -3,31 +3,35 @@ import mongoose from 'mongoose'
 const quizSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, '测验标题是必需的']
+    required: [true, 'Quiz title is required']
   },
   courseId: {
     type: String,
-    required: [true, '课程ID是必需的']
+    required: [true, 'Course ID is required']
   },
   availableUntil: {
     type: Date,
-    required: [true, '截止日期是必需的']
+    required: [true, 'Available until date is required']
   },
   dueDate: {
     type: Date,
-    required: [true, '提交期限是必需的']
+    required: [true, 'Due date is required']
   },
   points: {
     type: Number,
-    required: [true, '分数是必需的']
+    required: [true, 'Total points are required']
   },
   questionCount: {
     type: Number,
-    required: [true, '题目数量是必需的']
+    required: [true, 'Number of questions is required']
   },
   isAvailable: {
     type: Boolean,
     default: true
+  },
+  questions: {
+    type: [Object],
+    required: [true, 'Questions are required']
   },
   createdAt: {
     type: Date,

@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { AnimatedBackground } from '../components/AnimatedBackground'
 import { PricingCard } from '../components/pricing/PricingCard'
 
@@ -70,6 +74,30 @@ const pricingPlans = [
 ]
 
 export default function PricingPage() {
+  const [loading, setLoading] = useState(false)
+  const [accessCode, setAccessCode] = useState<string | null>(null)
+  const router = useRouter()
+
+  const handlePayment = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/payment', {
+        method: 'POST',
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setAccessCode(data.accessCode)
+      } else {
+        alert('Payment failed. Please try again.')
+      }
+    } catch (error) {
+      console.error('Payment error:', error)
+      alert('Payment failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1C1D24] to-[#2C2D34] relative overflow-hidden">
       <AnimatedBackground />
@@ -97,6 +125,32 @@ export default function PricingPage() {
             technical support, community access, and completion certificate.
             Contact our course advisors for custom learning plans.
           </p>
+        </div>
+
+        <div className="mt-16 text-center">
+          <h2 className="text-2xl font-semibold mb-4">Get Full Access</h2>
+          <p className="text-gray-400 mb-6">One-time payment for lifetime access to all courses</p>
+          <div className="text-3xl font-bold mb-8">$99.99</div>
+          
+          {!accessCode ? (
+            <button
+              onClick={handlePayment}
+              disabled={loading}
+              className="px-8 py-4 bg-[#2493DF] text-white rounded-lg hover:bg-[#1f7bc0] transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Processing...' : 'Pay Now'}
+            </button>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-white/10 p-4 rounded-lg">
+                <p className="text-sm text-gray-400 mb-2">Your Access Code:</p>
+                <p className="text-2xl font-mono font-bold text-[#2493DF]">{accessCode}</p>
+              </div>
+              <p className="text-sm text-gray-400">
+                Please save this code. You'll need it to access course content.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

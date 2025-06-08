@@ -3,8 +3,15 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client
 import { randomUUID } from 'crypto'
 import { getDb } from '../../../../../../lib/mongodb'
 import { ObjectId } from 'mongodb'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
 export async function POST(req: Request, { params }: { params: { courseId: string, assignmentId: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
+  }
+
   const formData = await req.formData()
   const files = formData.getAll('file') as File[]
 
@@ -61,6 +68,11 @@ export async function POST(req: Request, { params }: { params: { courseId: strin
 }
 
 export async function DELETE(req: Request, { params }: { params: { courseId: string, assignmentId: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
+  }
+
   const { url } = await req.json()
 
   const db = await getDb()

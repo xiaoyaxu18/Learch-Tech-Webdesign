@@ -30,3 +30,32 @@ export async function GET(request: Request, { params }: { params: { courseId: st
     return new NextResponse('Internal Server Error', { status: 500 })
   }
 }
+
+export async function POST(request: Request, { params }: { params: { courseId: string } }) {
+  try {
+    const db = await getDb();
+    const body = await request.json();
+
+    // 检查必需字段
+    const { title, url, key, uploadedBy } = body;
+    if (!title || !url || !key || !uploadedBy) {
+      return new NextResponse('Missing required fields', { status: 400 });
+    }
+
+    const video = {
+      title,
+      url,
+      key,
+      uploadedBy,
+      courseId: new ObjectId(params.courseId),
+      createdAt: new Date()
+    };
+
+    await db.collection('videos').insertOne(video);
+
+    return NextResponse.json({ success: true, video });
+  } catch (error) {
+    console.error('Error inserting video:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}

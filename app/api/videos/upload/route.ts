@@ -13,7 +13,31 @@ export async function POST(req: Request) {
     }
 
     await dbConnect()
-    
+
+    const contentType = req.headers.get('content-type') || ''
+    if (contentType.includes('application/json')) {
+      // 支持手动上传后插入 metadata
+      const body = await req.json()
+
+      if (!body.title || !body.url || !body.key || !body.courseId) {
+        return NextResponse.json({ error: '缺少字段' }, { status: 400 })
+      }
+
+      const video = await Video.create({
+        title: body.title,
+        url: body.url,
+        key: body.key,
+        courseId: body.courseId,
+        duration: body.duration || '00:00',
+        uploadedBy: session.user.id,
+        createdAt: new Date(),
+        watched: false
+      })
+
+      return NextResponse.json({ video })
+    }
+
+    // 表单上传流程
     const formData = await req.formData()
     const videoFile = formData.get('video') as File
     const title = formData.get('title') as string
@@ -23,23 +47,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '缺少必需字段' }, { status: 400 })
     }
 
-    // 生成唯一的文件名
     const fileName = `${Date.now()}-${videoFile.name}`
     const fileKey = `course-videos/${fileName}`
-
-    // 将文件转换为 Buffer
     const fileBuffer = Buffer.from(await videoFile.arrayBuffer())
-
-    // 上传到 S3
     const url = await uploadToS3(fileBuffer, fileKey, videoFile.type)
 
-    // 创建视频记录
     const video = await Video.create({
       title,
       courseId,
       url,
-      key: fileKey, // 保存 S3 key 以便后续生成签名 URL
-      duration: '00:00', // 这里需要实际计算视频时长
+      key: fileKey,
+      duration: '00:00',
       uploadedBy: session.user.id
     })
 
@@ -51,4 +69,4 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
-} 
+}

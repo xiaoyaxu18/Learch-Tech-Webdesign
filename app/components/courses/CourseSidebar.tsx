@@ -56,11 +56,6 @@ export function CourseSidebar({ courseId }: { courseId: string }) {
       icon: CheckSquare
     },
     {
-      name: 'Exams',
-      href: `/courses/${courseId}/exams`,
-      icon: Award
-    },
-    {
       name: 'Grades',
       href: `/courses/${courseId}/grades`,
       icon: GraduationCap

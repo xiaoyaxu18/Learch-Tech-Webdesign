@@ -39,7 +39,11 @@ export default function VideoLecturePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white/5 rounded-xl overflow-hidden">
           {selectedVideo ? (
-            <VideoPlayer url={selectedVideo.url} title={selectedVideo.title} />
+            <VideoPlayer
+              key={selectedVideo._id}
+              url={encodeURI(selectedVideo.url)}
+              title={selectedVideo.title}
+            />
           ) : (
             <div className="aspect-video flex items-center justify-center text-gray-400">
               Select a video to start learning
@@ -50,10 +54,10 @@ export default function VideoLecturePage() {
           <h3 className="text-lg font-medium text-white mb-4">Course Videos</h3>
           <div className="space-y-2">
             {videos.map((video) => (
-              <Link
+              <button
                 key={video._id}
-                href={`/courses/${courseId}/videos/${video._id}`}
-                className={`block w-full flex items-start gap-3 p-3 rounded-lg transition-colors
+                onClick={() => setSelectedVideo(video)}
+                className={`block w-full text-left flex items-start gap-3 p-3 rounded-lg transition-colors
                   ${selectedVideo?._id === video._id 
                     ? 'bg-[#2493DF]/20 text-[#2493DF]' 
                     : 'hover:bg-white/5 text-white'
@@ -62,7 +66,7 @@ export default function VideoLecturePage() {
                 <div className="flex-1 text-left">
                   <h4 className="font-medium">{video.title}</h4>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         </div>
