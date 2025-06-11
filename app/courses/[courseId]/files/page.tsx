@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { courses } from '@/app/data/courses'
 import { FileText, Download, Trash2, FolderOpen } from 'lucide-react'
 import { useAuth } from '@/app/contexts/AuthContext'
+import { useParams } from 'next/navigation'
 
 interface CourseFile {
   id: number
@@ -16,9 +17,9 @@ interface CourseFile {
   downloadUrl: string
 }
 
-export default function FilesPage({ params }: { params: { courseId: string } }) {
-  const [courseId, setCourseId] = useState('')
-  useEffect(() => { setCourseId(params.courseId) }, [params.courseId])
+export default function FilesPage() {
+  const params = useParams() as { courseId: string }
+  const courseId = params.courseId
   const { user } = useAuth()
   const isAdmin = user?.role === 'admin'
   

@@ -17,10 +17,10 @@ export function CourseHeader({ courseId }: { courseId: string }) {
 
   // 在实际应用中，这里会从API获取课程信息
   useEffect(() => {
-    // 模拟API调用
+    // 直接写成你想要的内容
     setCourseInfo({
-      name: 'Linear Algebra',
-      instructor: 'Dr. Sarah Chen',
+      name: 'Dashboards with Tableau',
+      instructor: 'Dr. TaoLi',
       progress: 35
     })
   }, [courseId])

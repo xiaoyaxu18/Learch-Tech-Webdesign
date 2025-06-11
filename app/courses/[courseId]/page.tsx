@@ -14,7 +14,12 @@ export default function CoursePage() {
     setLoading(true)
     fetch(`/api/courses/${courseId}`)
       .then(res => res.json())
-      .then(data => setCourse(data))
+      .then(data => {
+        data.title = "Dashboards with Tableau"
+        data.description = "This course enables you to transform data into persuasive dashboards that effectively inform and guide management actions. Dashboards are persuasive if they motivate actions in an intended audience. Dashboards are effective if they offer comprehensive and reliable information. This course introduces and discusses the fundamental design principles and technology of dashboards and allows you to design, implement, and critique dashboards."
+        data.instructor = "Dr. TaoLi"
+        setCourse(data)
+      })
       .finally(() => setLoading(false))
   }, [courseId])
 

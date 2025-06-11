@@ -6,14 +6,14 @@ const courses = [
   {
     _id: '65f2f1234567890abcdef123',
     id: 1,
-    name: 'Linear Algebra',
-    description: 'Master the fundamentals of linear algebra essential for machine learning and data science.',
+    name: 'Dashboards with Tableau',
+    description: 'This course enables you to transform data into persuasive dashboards that effectively inform and guide management actions. Dashboards are persuasive if they motivate actions in an intended audience. Dashboards are effective if they offer comprehensive and reliable information. This course introduces and discusses the fundamental design principles and technology of dashboards and allows you to design, implement, and critique dashboards.',
     level: 'Beginner',
     duration: '8 weeks',
     topics: ['Vectors & Matrices', 'Linear Transformations', 'Eigenvalues'],
     progress: 0,
-    instructor: 'Dr. Sarah Chen',
-    startDate: '2024-02-01'
+    instructor: 'Dr. Tao Li',
+    startDate: '2025-02-01'
   },
   {
     _id: 'course-2',

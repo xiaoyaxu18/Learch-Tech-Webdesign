@@ -5,12 +5,10 @@ import { Button } from '@/app/components/ui/button'
 import { Calendar, Clock, ArrowLeft, Pencil, Save } from 'lucide-react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { useParams } from 'next/navigation'
 
-export default function AssignmentPage({ 
-  params 
-}: { 
-  params: { courseId: string; assignmentId: string } 
-}) {
+export default function AssignmentPage() {
+  const params = useParams() as { courseId: string; assignmentId: string }
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'admin';
   const [assignment, setAssignment] = useState<{
